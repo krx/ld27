@@ -1,0 +1,40 @@
+package ld27;
+
+import java.applet.Applet;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+
+@SuppressWarnings("serial")
+public class AppletGame extends Applet {
+	GameMenu mn;
+	GamePanel gp;
+	
+	public void init() {
+		mn = new GameMenu(this);
+		add(mn);
+		setSize(mn.getPreferredSize());
+		new Thread() {
+			public void run() {
+				new java.util.Timer().schedule(new java.util.TimerTask() {
+					public void run() {
+						repaint();
+					}
+				}, 1, 100);
+			}
+		}.start();
+	}
+	public void paint(Graphics g) {
+	}
+	public void update(Graphics g){
+		BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+		Graphics bg = img.getGraphics();
+		bg.setColor(Color.WHITE);
+		bg.fillRect(0, 0, getWidth(), getHeight());
+		if (gp == null)
+			mn.paint(bg);
+		else
+			gp.paint(bg);
+		g.drawImage(img, 0, 0, null);
+	}
+}

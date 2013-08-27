@@ -1,0 +1,37 @@
+package ld27.ui;
+
+import java.awt.Color;
+import java.awt.Graphics;
+
+public class InGameUI {
+	public int maxHealth;
+	public int maxHealthBarWidth = 200;
+	public int currentHealthBarWidth = 200;
+	public int healthBarHeight = 32;
+	public int playerCurrentHealth;
+	
+	public InGameUI(int mH){
+		maxHealth = mH;
+		playerCurrentHealth = 356;
+		calculateHealthBarWidth();
+	}
+	
+	public void paint(Graphics g){
+		//Sets the color to transparent grey, then draws the box
+		//This is the 'background' for all of the UI stuff
+		g.setColor(new Color(205,201,201,200));
+		g.fillRect(0, 546, 810, 64);
+		
+		//Draw the red backing of the health bar
+		g.setColor(Color.red);
+		g.fillRect(20, 562, maxHealthBarWidth, healthBarHeight);
+		
+		g.setColor(Color.green);
+		g.fillRect(20, 562,currentHealthBarWidth, healthBarHeight);
+		
+	}
+	
+	public void calculateHealthBarWidth(){
+		currentHealthBarWidth = (playerCurrentHealth * maxHealthBarWidth) / maxHealth;
+	}
+}

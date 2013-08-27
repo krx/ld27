@@ -1,0 +1,55 @@
+package ld27;
+
+import java.awt.Color;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+
+/**
+ * Class to hold player information
+ * @author RedSoxFan
+ */
+public class Player {
+	public Color c = new Color((float) Math.random(), (float) Math.random(), (float) Math.random());
+	public Socket sock;
+	public PrintWriter pw;
+	/**
+	 * Create a standalone player
+	 */
+	public Player() {
+		this("", 0);
+	}
+	/**
+	 * Connect player to a server
+	 * @param server - IP Address or Domain Name
+	 * @param port - Port the server is listening on
+	 */
+	public Player(String server, int port) {
+		if (!server.trim().isEmpty()) {
+			try {
+				System.out.println(c.hashCode());
+				sock = new Socket(server, port);
+				pw = new PrintWriter(sock.getOutputStream());
+				pw.println("[Ld1bTt]");
+				pw.flush();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	/**
+	 * Create a player - should only be used for remote players
+	 * @param s - Socket for remote player
+	 * @return Remote player object
+	 */
+	public static Player createPlayer(Socket s) {
+		Player p = new Player();
+		p.sock = s;
+		try {
+			p.pw = new PrintWriter(p.sock.getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return p;
+	}
+}

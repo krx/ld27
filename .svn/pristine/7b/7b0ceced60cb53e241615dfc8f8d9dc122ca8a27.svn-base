@@ -1,0 +1,88 @@
+package ld27;
+
+import java.applet.Applet;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+
+import javax.swing.JFrame;
+
+@SuppressWarnings("serial")
+public class AppletGame extends Applet {
+	Component PANEL;
+	private BufferedImage img;
+	private BufferedImage onScreen;
+	public static final GraphicsDevice DEVICE = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+	public static final int HEIGHT = 600;
+	public static final int WIDTH = 800;
+	public static final JFrame POPOUT = new JFrame("");
+	public final KeyListener KEY = new KeyAdapter() {
+		public void keyReleased(KeyEvent event) {
+			if (event.getKeyCode() == KeyEvent.VK_F)
+				setFullscreen(!POPOUT.isVisible());
+		}
+	};
+
+	public void init() {
+		PANEL = new GameMenu(this);
+		add(PANEL);
+		setSize(PANEL.getPreferredSize());
+		POPOUT.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		POPOUT.setLayout(new BorderLayout());
+		POPOUT.setUndecorated(true);
+		PANEL.requestFocus();
+		PANEL.addKeyListener(KEY);
+		new java.util.Timer().scheduleAtFixedRate(new java.util.TimerTask() {
+			public void run() {
+				if (!POPOUT.isVisible())
+					repaint();
+				else
+					PANEL.repaint();
+			}
+		}, 1, 1000/60);
+	}
+	
+	public void paint(Graphics g) {
+		g.drawImage(onScreen, 0, 0, null);
+	}
+	
+	public void update(Graphics g) {
+		img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+		img.getGraphics().setColor(Color.WHITE);
+		img.getGraphics().fillRect(0, 0, img.getWidth(), img.getHeight());
+		PANEL.paint(img.getGraphics());
+		g.drawImage(img, 0, 0, null);
+		onScreen = img;
+	}
+
+	public void setFullscreen(boolean fulls) {
+		if (fulls) {
+			POPOUT.add(PANEL, BorderLayout.CENTER);
+			PANEL.setPreferredSize(new Dimension(1, 1));
+			POPOUT.setVisible(true);
+			PANEL.requestFocus();
+			DEVICE.setFullScreenWindow(POPOUT); // Re-Associate popout with full
+												// screen.
+			if (PANEL instanceof GameMenu)
+				((GameMenu) PANEL).setParent(POPOUT);
+		} else {
+			add(PANEL, BorderLayout.CENTER);
+			PANEL.setSize(new Dimension(WIDTH, HEIGHT));
+			POPOUT.setVisible(false);
+			PANEL.requestFocus();
+			DEVICE.setFullScreenWindow(null); // Un-Associate popout with full
+												// screen.
+			if (PANEL instanceof GameMenu)
+				((GameMenu) PANEL).setParent(this);
+		}
+	}
+
+}

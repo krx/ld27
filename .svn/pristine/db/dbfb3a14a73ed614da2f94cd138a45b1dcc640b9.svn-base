@@ -1,0 +1,20 @@
+package ld27.map;
+
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+
+public class Tile {
+	private BufferedImage img;
+	private int x,y,layer;
+	
+	public Tile(BufferedImage img, int x, int y, int layer){
+		this.img = img;
+		this.x = x;
+		this.y = y;
+		this.layer = layer;
+	}
+	
+	public void paint(Graphics g){
+		g.drawImage(img, x*img.getWidth(), y*img.getHeight(), null);
+	}
+}

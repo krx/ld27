@@ -1,0 +1,68 @@
+package ld27.player;
+
+import java.awt.event.KeyEvent;
+
+public class PlayerController {
+	boolean movingLeft, movingRight, jumpKey, jumpReleased;
+	boolean lastMovingLeft;
+	
+	public PlayerController(){
+		movingLeft = false;
+		movingRight = false;
+		jumpKey = false;
+		jumpReleased = true;
+	}
+	
+	public void processKeyPressed(KeyEvent e){
+		if (e.getKeyCode()==KeyEvent.VK_A) {
+			movingLeft = true;
+			lastMovingLeft = true;
+		}
+		if (e.getKeyCode()==KeyEvent.VK_D) {
+			movingRight = true;
+			lastMovingLeft = false;
+		}
+		if ((e.getKeyCode()==KeyEvent.VK_W)){
+			jumpKey = true;
+		}
+	}
+	
+	public void processKeyReleased(KeyEvent e){
+		if (e.getKeyCode()==KeyEvent.VK_A)
+			movingLeft = false;
+		if (e.getKeyCode()==KeyEvent.VK_D)
+			movingRight = false;
+		if (e.getKeyCode()==KeyEvent.VK_W){
+			jumpKey = false;
+		}
+	}
+
+	public boolean isLastMovingLeft() {
+		return lastMovingLeft;
+	}
+	
+	public boolean isMovingLeft() {
+		return movingLeft;
+	}
+
+	public void setMovingLeft(boolean movingLeft) {
+		this.movingLeft = movingLeft;
+	}
+
+	public boolean isMovingRight() {
+		return movingRight;
+	}
+
+	public void setMovingRight(boolean movingRight) {
+		this.movingRight = movingRight;
+	}
+
+	public boolean isJumpKey() {
+		return jumpKey;
+	}
+
+	public void setJumpKey(boolean jumpKey) {
+		this.jumpKey = jumpKey;
+	}
+	
+}

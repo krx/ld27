@@ -1,0 +1,8 @@
+package ld27.player;
+
+public abstract class Animatable {
+	
+	protected Animation activeAnim;
+	
+	public abstract void loadAnims();
+}

@@ -1,0 +1,93 @@
+package ld27.multiplayer;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Inet4Address;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.TimerTask;
+
+import ld27.Player;
+
+/**
+ * Class to handle the game server
+ * @author RedSoxFan
+ */
+public class GameServer {
+	public static void main(String[] args) {
+		try {
+			GameServer gs = new GameServer(4805);
+			Player p1 = new Player(gs.getHost(), gs.getPort());
+			p1.pw.println(p1.c.hashCode());
+			p1.pw.flush();
+			Player p2 = new Player(gs.getHost(), gs.getPort());
+			p2.pw.println(p2.c.hashCode());
+			p2.pw.flush();
+			Player p3 = new Player(gs.getHost(), gs.getPort());
+			p3.pw.println(p3.c.hashCode());
+			p3.pw.flush();
+			p1.pw.println("Fun");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	private ArrayList<Player> players = new ArrayList<Player>(); 
+	private int port = 0;
+	private ServerSocket serv = null;
+	public GameServer(int port) throws IOException {
+		this.port = port;
+		serv = new ServerSocket(port, 15);
+		new java.util.Timer().scheduleAtFixedRate(new TimerTask() {
+			public void run() {
+				try {
+					Socket s = serv.accept();
+					BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+					String msg = br.readLine();
+					if (msg!=null && msg.equals("[Ld1bTt]")) {
+						System.err.println("Added");
+						synchronized (players) {
+							players.add(Player.createPlayer(s));
+						}
+					} else {
+						System.err.println("Rogue");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}, 1, 100);
+		new java.util.Timer().schedule(new TimerTask() {
+			public void run() {
+				synchronized (players) {
+					for (int i=0; i<players.size(); i++) {
+						try {
+							BufferedReader br = new BufferedReader(new InputStreamReader(players.get(i).sock.getInputStream()));
+							String msg = "";
+							System.out.println(i);
+							if (br.ready()) {
+								System.out.println("Ready");
+								msg = br.readLine();
+								System.out.println("Message: " + msg);
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		}, 1, 100);
+	}
+	public String getHost() {
+		try {
+			return Inet4Address.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+		}
+		return "127.0.0.1";
+	}
+	public int getPort() {
+		return port;
+	}
+}

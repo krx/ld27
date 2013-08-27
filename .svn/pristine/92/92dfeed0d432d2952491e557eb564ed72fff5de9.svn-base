@@ -1,0 +1,15 @@
+package ld27.multiplayer;
+
+import java.net.ServerSocket;
+import java.util.ArrayList;
+
+import ld27.Player;
+
+/**
+ * Class to handle the game server. This class will work for peer-to-peer and central server game play once done.
+ * @author RedSoxFan
+ */
+public class GameServer {
+	private ServerSocket serv;
+	private ArrayList<Player> players = new ArrayList<Player>();
+}

@@ -1,0 +1,19 @@
+package ld27;
+
+import java.applet.Applet;
+import java.awt.Graphics;
+
+@SuppressWarnings("serial")
+public class AppletGame extends Applet {
+	GamePanel gp;
+	
+	public void init() {
+		gp = new GamePanel();
+		add(gp);
+		setSize(gp.getPreferredSize());
+	}
+	
+	public void update(Graphics g){
+		gp.paint(g);
+	}
+}

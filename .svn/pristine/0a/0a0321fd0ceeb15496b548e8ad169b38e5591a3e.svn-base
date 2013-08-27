@@ -1,0 +1,32 @@
+package ld27.player;
+
+
+public class Ninja extends Player {
+	private static final String root = "/graphics/Ninja/";
+	
+	public Ninja(){
+		super();
+		loadAnims();
+	}
+	
+	public void attack() {
+		
+	}
+	
+	public void ability() {
+		
+	}
+
+	public void loadAnims() {
+		String[] idlePaths = {root + "Idle/DudeWithSword0.png",
+							  root + "Idle/DudeWithSword1.png",
+							  root + "Idle/DudeWithSword2.png",};
+		String[] attackPaths = {root + "Attack/DudeWithSwordAttack0.png",
+								root + "Attack/DudeWithSwordAttack1.png"};
+		Animation idle = new Animation(idlePaths);
+		Animation attack = new Animation(attackPaths);
+		anims.put(State.Idle, idle);
+		anims.put(State.Attacking, attack);
+		activeAnim = anims.get(State.Idle);
+	}
+}

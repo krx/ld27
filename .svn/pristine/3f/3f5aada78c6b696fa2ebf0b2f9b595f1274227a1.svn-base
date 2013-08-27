@@ -1,0 +1,125 @@
+package ld27.map;
+
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import ld27.util.FileIOHelper;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+public class XMLParser {
+	private final static String dataRoot = "/maps/data/";
+	private final static String tileSetRoot = "/maps/tileset/";
+	
+	public static Map loadMap(Maps m){
+		String name = m.name().toLowerCase() + ".xml";
+		BufferedInputStream mapData = FileIOHelper.loadResource(dataRoot+name);
+		ArrayList<BufferedImage> tileImages = new ArrayList<BufferedImage>();
+		tileImages.add(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB));
+		Tile[][][] mapTiles;
+		try {
+			//Load XML file
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(mapData);
+			doc.getDocumentElement().normalize();
+			//Load map data
+			NodeList mapNodes = doc.getElementsByTagName("map");
+			Node map = mapNodes.item(0);
+			Element eMap = null;
+			if(map.getNodeType() == Node.ELEMENT_NODE)
+				eMap = (Element)map;
+			int w = Integer.parseInt(eMap.getAttribute("width"));
+			int h = Integer.parseInt(eMap.getAttribute("height"));
+			int tw = Integer.parseInt(eMap.getAttribute("tilewidth"));
+			int th = Integer.parseInt(eMap.getAttribute("tileheight"));
+			//Load Tileset images
+			NodeList tsNodes = doc.getElementsByTagName("tileset");
+			for(int i=0; i<tsNodes.getLength(); i++){
+				Node ts = tsNodes.item(i);
+				NodeList children = ts.getChildNodes();
+				Element eImg = null;
+				for(int j=0; j<children.getLength(); j++){
+					if(children.item(j).getNodeType() == Node.ELEMENT_NODE && children.item(j).getNodeName().equals("image")){
+						eImg = (Element) children.item(j);
+						break;
+					}
+				}
+				String path = tileSetRoot + eImg.getAttribute("source");
+				TileSet temp = new TileSet(name, path, tileImages.size(), tw, th);
+				tileImages.addAll(temp.getParsedImages());
+			}
+			//Load layer data
+			//Layers
+			NodeList layers = doc.getElementsByTagName("layer");
+			//Count total tiles to set size of map array
+			int totalTiles = 0;
+			for(int i=0; i<layers.getLength(); i++){
+				Node layer = layers.item(i);
+				NodeList children = layer.getChildNodes();
+				Node data = null;
+				for(int j=0; j<children.getLength(); j++){
+					if(children.item(j).getNodeType() == Node.ELEMENT_NODE){
+						data = children.item(j);
+						break;
+					}
+				}
+				NodeList tileElements = data.getChildNodes();
+				for(int j=0; j<tileElements.getLength(); j++){
+					if(tileElements.item(j).getNodeType() == Node.ELEMENT_NODE && tileElements.item(j).getNodeName().equals("tile")){
+						totalTiles++;
+					}
+				}
+			}
+			//Set map size
+			mapTiles = new Tile[layers.getLength()][totalTiles/w][totalTiles/h];
+			//Fill map with correct tiles
+			for(int lyr=0; lyr<layers.getLength(); lyr++){
+				Node layer = layers.item(lyr);
+				NodeList children = layer.getChildNodes();
+				Node data = null;
+				for(int j=0; j<children.getLength(); j++){
+					if(children.item(j).getNodeType() == Node.ELEMENT_NODE){
+						data = children.item(j);
+						break;
+					}
+				}
+				NodeList tileNodes = data.getChildNodes();
+				ArrayList<Element> eTiles = new ArrayList<Element>();
+				for(int j=0; j<tileNodes.getLength(); j++){
+					if(tileNodes.item(j).getNodeType() == Node.ELEMENT_NODE && tileNodes.item(j).getNodeName().equals("tile")){
+						eTiles.add((Element)tileNodes.item(j));
+					}
+				}
+				//Checks the gid of every data element, which corresponds to the image index int the tileImages ArrayList
+				int index = 0;
+				for(int y=0; y<h; y++){
+					for(int x=0; x<w; x++){
+						mapTiles[lyr][y][x] = new Tile(tileImages.get(Integer.parseInt(eTiles.get(index).getAttribute("gid"))), x, y, lyr);
+						index++;
+					}
+				}
+			}
+			//Return the successfully loaded map
+			Map loadedMap = new Map(mapTiles, w, h, tw, th, layers.getLength());
+			return loadedMap;
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+}

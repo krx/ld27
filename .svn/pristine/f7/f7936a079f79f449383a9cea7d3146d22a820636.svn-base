@@ -1,0 +1,133 @@
+package ld27;
+
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+
+import javax.swing.JPanel;
+
+import ld27.GamePanel.Screen;
+import ld27.menu.Menu;
+import ld27.menu.Menu.MenuFunction;
+import ld27.menu.Scale;
+import ld27.menu.Words;
+
+@SuppressWarnings("serial")
+public class GameMenu extends JPanel {
+	private Menu m;
+	private Container parent;
+	public GameMenu(final Container pnt) {
+		parent = pnt;
+		setPreferredSize(new Dimension(800, 600));
+		Words.VOID_COLOR = new Color(0x333333);
+		Words.LETTER_COLOR = new Color(0xCCCCCC);
+		m = new Menu("Slime Zone");
+		final GameMenu gameMenu = this;
+		m.addSelection(new MenuFunction() {
+			public void run() {
+				parent.remove(gameMenu);
+				GamePanel panel = new GamePanel(pnt);
+				panel.screen = Screen.PLAYER_CONFIG;
+				parent.add(panel);
+				panel.setSize(parent.getWidth(), parent.getHeight());
+				if (pnt instanceof AppletGame) {
+					((AppletGame) pnt).PANEL = panel;
+					panel.addKeyListener(((AppletGame) pnt).KEY);
+				} else if (pnt instanceof DesktopGame) {
+					((DesktopGame) pnt).PANEL = panel;
+					if (DesktopGame.DEVICE.getFullScreenWindow() == null)
+						((DesktopGame) pnt).pack();
+					panel.addKeyListener(((DesktopGame) pnt).KEY);
+				}
+				panel.requestFocus();
+			}
+			public String name() {
+				return "Play";
+			}
+		});
+		m.addSelection(new MenuFunction() {
+			public void run() {
+				parent.remove(gameMenu);
+				GamePanel panel = new GamePanel(pnt);
+				panel.screen = Screen.INSTRUCTIONS;
+				parent.add(panel);
+				panel.setSize(parent.getWidth(), parent.getHeight());
+				if (pnt instanceof AppletGame) {
+					((AppletGame) pnt).PANEL = panel;
+					panel.addKeyListener(((AppletGame) pnt).KEY);
+				} else if (pnt instanceof DesktopGame) {
+					((DesktopGame) pnt).PANEL = panel;
+					if (DesktopGame.DEVICE.getFullScreenWindow() == null)
+						((DesktopGame) pnt).pack();
+					panel.addKeyListener(((DesktopGame) pnt).KEY);
+				}
+				panel.requestFocus();
+			}
+			public String name() {
+				return "Instructions";
+			}
+		});
+		m.addSelection(new MenuFunction() {
+			public void run() {
+				parent.remove(gameMenu);
+				GamePanel panel = new GamePanel(pnt);
+				panel.screen = Screen.CLASS;
+				parent.add(panel);
+				panel.setSize(parent.getWidth(), parent.getHeight());
+				if (pnt instanceof AppletGame) {
+					((AppletGame) pnt).PANEL = panel;
+					panel.addKeyListener(((AppletGame) pnt).KEY);
+				} else if (pnt instanceof DesktopGame) {
+					((DesktopGame) pnt).PANEL = panel;
+					if (DesktopGame.DEVICE.getFullScreenWindow() == null)
+						((DesktopGame) pnt).pack();
+					panel.addKeyListener(((DesktopGame) pnt).KEY);
+				}
+				panel.requestFocus();
+			}
+			public String name() {
+				return "Class Information";
+			}
+		});
+		if (!(parent instanceof AppletGame)) {
+			m.addSelection(new MenuFunction() {
+				public void run() {
+					System.exit(0);
+				}
+				public String name() {
+					return "Quit";
+				}
+			});
+		}
+		setFocusable(true);
+		requestFocus();
+		addKeyListener(new KeyAdapter(){
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W)
+					m.selectorUp();
+				else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S)
+					m.selectorDown();
+				else if (e.getKeyCode() == KeyEvent.VK_ENTER)
+					m.select();
+			}
+		});
+	}
+	public void paint(Graphics g) {
+		BufferedImage img = new BufferedImage(Scale.SCREEN_WIDTH, Scale.SCREEN_HEIGHT, BufferedImage.TYPE_INT_RGB);
+		Graphics bg = img.getGraphics();
+		bg.setColor(Words.VOID_COLOR);
+		bg.fillRect(0, 0, img.getWidth(), img.getHeight());
+		m.paintMenu(bg);
+		g.drawImage(img, 0, 0, getWidth(), getHeight(), 0, 0, 800, 600, null);
+	}
+	
+	public void setParent(Container parent) {
+		this.parent = parent;
+		setSize(parent.getWidth(), parent.getHeight());
+		repaint();
+	}
+}

@@ -1,0 +1,28 @@
+package ld27.player;
+
+public class GunDude extends Player {
+	private static final String root = "/graphics/GunDude/";
+	
+	public GunDude(){
+		super();
+		loadAnims();
+	}
+	
+	public void attack() {
+
+	}
+
+	public void loadAnims() {
+		String[] idlePaths = {root + "Idle/DudeWithGunPassive0.png",
+						 root + "Idle/DudeWithGunPassive1.png",
+						 root + "Idle/DudeWithGunPassive2.png",
+						 root + "Idle/DudeWithGunPassive3.png"};
+		String[] attackPaths = {root + "Attack/DudeWithGun0.png",
+								root + "Attack/DudeWithGun1.png"};
+		Animation idle = new Animation(idlePaths);
+		Animation attack = new Animation(attackPaths);
+		anims.put(State.Idle, idle);
+		anims.put(State.Attacking, attack);
+		activeAnim = anims.get(State.Idle);
+	}
+}

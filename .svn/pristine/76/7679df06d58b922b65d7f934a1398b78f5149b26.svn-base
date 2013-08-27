@@ -1,0 +1,24 @@
+package ld27.map;
+
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+
+public class Tile {
+	private BufferedImage img;
+	private int x,y,layer;
+	private Rectangle bounds;
+	
+	public Tile(BufferedImage img, int x, int y, int layer){
+		this.img = img;
+		this.x = x;
+		this.y = y;
+		this.layer = layer;
+		bounds = new Rectangle(x*img.getWidth(), y*img.getHeight(), img.getWidth(), img.getHeight());
+	}
+	
+	public void paint(Graphics g, int offx, int offy){
+		g.drawImage(img, x*img.getWidth()+offx, y*img.getHeight()+offy, null);
+		bounds.setBounds(x*img.getWidth()+offx, y*img.getHeight()+offx, img.getWidth(), img.getHeight());
+	}
+}

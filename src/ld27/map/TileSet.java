@@ -1,0 +1,39 @@
+package ld27.map;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
+
+import ld27.util.FileIOHelper;
+
+public class TileSet {
+	private String name;
+	private BufferedImage orignal;
+	private int gidBegin, gidEnd;
+	private int tw,th;
+	
+	public TileSet(String name, String imgPath, int gidBegin, int tw, int th){
+		this.name = name;
+		try {
+			orignal = ImageIO.read(FileIOHelper.loadResource(imgPath));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		this.gidBegin = gidBegin;
+		this.gidEnd = gidBegin+((orignal.getWidth()/tw)*(orignal.getHeight()/th))-1;
+		this.tw = tw;
+		this.th = th;
+	}
+	
+	public ArrayList<BufferedImage> getParsedImages(){
+		ArrayList<BufferedImage> imgs = new ArrayList<BufferedImage>();
+		for(int y=0; y<orignal.getHeight(); y+=th){
+			for(int x=0; x<orignal.getWidth(); x+=tw){
+				imgs.add(orignal.getSubimage(x, y, tw, th));
+			}
+		}
+		return imgs;
+	}
+}

@@ -1,0 +1,59 @@
+package ld27.player.types;
+
+import java.awt.Color;
+
+import ld27.GamePanel;
+import ld27.player.Animation;
+import ld27.player.Bullet;
+import ld27.player.Player;
+import ld27.player.SuperBullet;
+
+public class GunDude extends Player {
+	private static final String root = "/graphics/GunDude/";
+	
+	public GunDude(int maxHealth, Color col, boolean leftTeam){
+		super(maxHealth, col, leftTeam);
+		loadAnims();
+	}
+	
+	public GunDude(int maxHealth, int x, int y, Color col, boolean leftTeam) {
+		this(maxHealth, col, leftTeam);
+		playerX = x;
+		playerY = y;
+	}
+	
+	public void ability() {
+		if(!keyController.isLastMovingLeft()){
+			SuperBullet b = new SuperBullet(false, playerX+64, playerY+32);
+			GamePanel.bullets.add(b);
+		} else {
+			SuperBullet b = new SuperBullet(true, playerX-32, playerY+32);
+			GamePanel.bullets.add(b);
+		}
+	}
+	
+	public void attack() {
+		if(!keyController.isLastMovingLeft()){
+			Bullet b = new Bullet(false, playerX+64, playerY+32);
+			GamePanel.bullets.add(b);
+		} else {
+			Bullet b = new Bullet(true, playerX-32, playerY+32);
+			GamePanel.bullets.add(b);
+		}
+	}
+
+	public void loadAnims() {
+		String[] idlePaths = {root + "Idle/DudeWithGunPassive0.png",
+						 root + "Idle/DudeWithGunPassive1.png",
+						 root + "Idle/DudeWithGunPassive2.png",
+						 root + "Idle/DudeWithGunPassive3.png"};
+		String[] attackPaths = {root + "Attack/DudeWithGun0.png",
+								root + "Attack/DudeWithGun1.png"};
+		Animation idle = new Animation(idlePaths);
+		Animation attack = new Animation(attackPaths);
+		attack.setRate(7);
+		anims.put(State.Idle, idle);
+		anims.put(State.Attacking, attack);
+		activeAnim = anims.get(State.Idle);
+	}
+}

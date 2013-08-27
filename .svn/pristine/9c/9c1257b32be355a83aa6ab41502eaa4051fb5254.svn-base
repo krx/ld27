@@ -1,0 +1,126 @@
+package ld27;
+
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import ld27.map.Map;
+import ld27.map.Maps;
+import ld27.map.XMLParser;
+
+@SuppressWarnings("serial")
+public class GamePanel extends JPanel implements KeyListener, MouseListener, MouseMotionListener{
+	//Sleep time between draw calls for 60fps
+	private static final int FRAMERATE = 1000/60;
+	//Data used for FPS calculations
+	private double startTime = 0;
+	private double deltaTime = 0;
+	private double fps = 0;
+	private int frames = 0;
+	private Map map;
+	private Camera cam;
+	
+	public GamePanel(){
+		setPreferredSize(new Dimension(800,600));
+		setFocusable(true);
+		addKeyListener(this);
+		addMouseListener(this);
+		addMouseMotionListener(this);
+		cam = new Camera(getWidth(), getHeight());
+		map = XMLParser.loadMap(Maps.Map3);
+		initTimer();
+	}
+	
+	//COMMENTS ARE FOR SCRUBS
+	public void tick(){
+		repaint();
+		if(cam.viewport.width != getWidth() || cam.viewport.height != getHeight()){
+			cam.viewport.width = getWidth();
+			cam.viewport.height = getHeight();
+			System.out.println(cam.viewport.width + " " + cam.viewport.height);
+		}
+	}
+	
+	public void paint(Graphics g){
+		//System.out.println(fps);
+		//ALL THE PAINTS STUFFZ GOES HERE
+		g.clearRect(0, 0, getWidth(), getHeight());
+		map.paint(g,cam.offx,cam.offy);
+		calcFPS(); //Must be at end of method
+	}
+	
+	/*
+	 * Calculates game fps
+	 * ^^WHAT HE SAID
+	 */
+	public void calcFPS() {
+		frames++;
+		if (startTime == 0) {
+			startTime = System.currentTimeMillis();
+		} else {
+			double time = System.currentTimeMillis();
+			deltaTime = time - startTime;
+			if (deltaTime > 1000) {
+				fps = (frames * 1000) / deltaTime;
+				frames = 0;
+				startTime = time;
+			}
+		}
+	}
+
+	Point start;
+	Point oldOff;
+	public void mouseClicked(MouseEvent e) {}
+
+	public void mouseEntered(MouseEvent e) {}
+
+	public void mouseExited(MouseEvent e) {}
+
+	public void mousePressed(MouseEvent e) {
+		if(SwingUtilities.isMiddleMouseButton(e)){
+			start = e.getPoint();
+			oldOff = new Point(cam.offx, cam.offy);
+		}
+	}
+
+	public void mouseReleased(MouseEvent e) {}
+	
+	public void mouseDragged(MouseEvent e) {
+		if(SwingUtilities.isMiddleMouseButton(e)){
+			cam.offx = oldOff.x + (e.getX()-start.x);
+			cam.offy = oldOff.y + (e.getY()-start.y);
+		}
+	}
+
+	public void mouseMoved(MouseEvent e) {}
+
+	public void keyPressed(KeyEvent e) {}
+
+	public void keyReleased(KeyEvent e) {}
+
+	public void keyTyped(KeyEvent e) {
+		//System.out.println(e.getKeyChar());
+	}
+
+	private void initTimer(){
+		Timer t1 = new Timer();
+		TimerTask tt1 = new TimerTask() {
+			public void run() {
+				tick();
+			}
+		};
+		t1.schedule(tt1, 0, FRAMERATE);
+	}
+
+	
+}

@@ -1,0 +1,16 @@
+package ld27;
+
+import java.net.Socket;
+
+/**
+ * Class to hold player information
+ * @author RedSoxFan
+ */
+public class Player {
+	public Socket sock;
+	public static Player createPlayer(Socket s) {
+		Player p = new Player();
+		p.sock = s;
+		return p;
+	}
+}

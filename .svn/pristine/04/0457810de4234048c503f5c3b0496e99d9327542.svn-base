@@ -1,0 +1,77 @@
+package ld27;
+
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+import javax.swing.JPanel;
+
+import ld27.menu.Menu;
+import ld27.menu.Menu.MenuFunction;
+import ld27.menu.Words;
+
+public class GameMenu extends JPanel {
+	private Menu m;
+	public GameMenu(final Container parent) {
+		setPreferredSize(new Dimension(800, 600));
+		Words.VOID_COLOR = new Color(0x111111);
+		Words.LETTER_COLOR = new Color(0xCCCCCC);
+		m = new Menu("Nameless");
+		final GameMenu gameMenu = this;
+		m.addSelection(new MenuFunction() {
+			public void run() {
+				parent.remove(gameMenu);
+				GamePanel panel = new GamePanel();
+				parent.add(panel);
+				if (parent instanceof AppletGame) {
+					((AppletGame) parent).PANEL = panel;
+				} else if (parent instanceof DesktopGame) {
+					((DesktopGame) parent).PANEL = panel;
+					((DesktopGame) parent).pack();
+				}
+				panel.requestFocus();
+			}
+			public String name() {
+				return "Play";
+			}
+		});
+		m.addSelection(new MenuFunction() {
+			public void run() {
+				
+			}
+			public String name() {
+				return "Instructions";
+			}
+		});
+		if (!(parent instanceof AppletGame)) {
+			m.addSelection(new MenuFunction() {
+				public void run() {
+					System.exit(0);
+				}
+				public String name() {
+					return "Quit";
+				}
+			});
+		}
+		setFocusable(true);
+		requestFocus();
+		addKeyListener(new KeyAdapter(){
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_UP)
+					m.selectorUp();
+				else if (e.getKeyCode() == KeyEvent.VK_DOWN)
+					m.selectorDown();
+				else if (e.getKeyCode() == KeyEvent.VK_ENTER)
+					m.select();
+			}
+		});
+	}
+	public void paint(Graphics g) {
+		g.setColor(Words.VOID_COLOR);
+		g.fillRect(0, 0, getWidth(), getHeight());
+		m.paintMenu(g);
+	}
+}

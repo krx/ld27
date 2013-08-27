@@ -1,0 +1,55 @@
+package ld27.map;
+
+import java.awt.Graphics;
+
+public class Map {
+	private Tile[][][] map;
+	private int width, height, tileWidth, tileHeight, layers;
+	
+	public Map(Tile[][][] map, int w, int h, int tw, int th, int layers){
+		this.map = map;
+		width = w;
+		height = h;
+		tileWidth = tw;
+		tileHeight = th;
+		this.layers = layers;
+	}
+	
+	public void paint(Graphics g, int offx, int offy){
+		for(int layer = 0; layer<layers; layer++){
+			for(int y=0; y<height; y++){
+				for(int x=0; x<width; x++){
+					map[layer][y][x].paint(g,offx,offy);
+				}
+			}
+		}
+	}
+	
+	public Tile[][][] getMapData(){
+		return map;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public int getTileWidth() {
+		return tileWidth;
+	}
+
+	public int getTileHeight() {
+		return tileHeight;
+	}
+	
+	public int getPxWidth(){
+		return width*tileWidth;
+	}
+	
+	public int getPxHeight(){
+		return height*tileHeight;
+	}
+}

@@ -1,0 +1,71 @@
+package ld27.ui;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.text.DecimalFormat;
+
+import ld27.GamePanel;
+import ld27.player.Player;
+
+public class InGameUI {
+	public Player player;
+	public int maxHealth;
+	public int maxHealthBarWidth = 200;
+	public int currentHealthBarWidth = 200;
+	public int healthBarHeight = 32;
+	public int playerCurrentHealth;
+	public boolean cdAbility = false;
+	DecimalFormat df = new DecimalFormat("#.00");
+	
+	public InGameUI(Player p){
+		player = p;
+		maxHealth = player.maxHealth;
+		playerCurrentHealth = player.health;
+		calculateHealthBarWidth();
+	}
+	
+	public void paint(Graphics g){
+		playerCurrentHealth = player.health;
+		calculateHealthBarWidth();
+		//Sets the color to transparent grey, then draws the box
+		//This is the 'background' for all of the UI stuff
+		g.setColor(new Color(205,201,201,200));
+		g.fillRect(0, 546, 810, 64);
+		
+		//Draw the red backing of the health bar
+		g.setColor(Color.red);
+		g.fillRect(20, 562, maxHealthBarWidth, healthBarHeight);
+		
+		g.setColor(Color.green);
+		g.fillRect(20, 562,currentHealthBarWidth, healthBarHeight);
+		
+		if(cdAbility){
+			g.setColor(Color.BLUE);
+			g.fillRect(250, 562, 32, 32);
+		}
+		double ratio = (double)(System.currentTimeMillis()-player.abilityStartTime)/(double)player.TEN_SECONDS;
+		g.setColor(Color.YELLOW);
+		if(ratio<=1.0){
+			g.fillRect(250, 562, (int)(32.0*ratio), 32);
+		} else {
+			g.fillRect(250, 562, 32, 32);
+			cdAbility = false;
+		}
+		if(cdAbility){
+			double timeLeft = 10.0-((double)System.currentTimeMillis() - (double)player.abilityStartTime)/1000.0;
+			g.setColor(Color.BLACK);
+			g.fillRect(250, 570, 32, 16);
+			g.setColor(Color.WHITE);
+			String t = df.format(timeLeft);
+			g.drawString(t.substring(0,t.indexOf('.')) + ":" + t.substring(t.indexOf('.')+1,t.length()), 253, 584);
+		}
+	}
+	
+	public void calculateHealthBarWidth(){
+		currentHealthBarWidth = (playerCurrentHealth * maxHealthBarWidth) / maxHealth;
+	}
+	
+	public void cooldownAbility(){
+		cdAbility = true;
+	}
+}

@@ -1,0 +1,54 @@
+package ld27;
+
+import java.awt.Rectangle;
+
+import ld27.map.Map;
+import ld27.util.MoreMath;
+
+public class Camera {
+	public Rectangle viewport;
+	public int offx=0, offy=0;
+	private int centerX, centerY;
+	private Player following = null;
+	
+	public Camera(int w, int h){
+		viewport = new Rectangle(0,0,w,h);
+	}
+	
+	public boolean canMoveX(int dx){
+		if(dx<0)
+			return offx + dx >= -Map.getPxWidth()+viewport.width;
+		else if(dx>0)
+			return offx + dx <= 0;
+		return false;
+	}
+	
+	public boolean canMoveY(int dy){
+		if(dy<0)
+			return offy + dy >= -Map.getPxHeight()+viewport.height;
+		else if(dy>0)
+			return offy + dy <= 0;
+		return false;
+	}
+	
+	public void updatePosition(){
+		centerX = viewport.width/2 - offx;
+		centerY = viewport.height/2 - offy;
+		if(following == null)
+			return;
+		if(!centeredOnPlayer()){
+			tryMove(MoreMath.clamp(following.playerX-centerX, -1, 1), MoreMath.clamp(following.playerY-centerY, -1, 1));
+		}
+	}
+	
+	public void tryMove(int x, int y){
+		
+	}
+		
+	
+	private boolean centeredOnPlayer(){
+		boolean x = following.playerX == centerX;
+		boolean y = following.playerY == centerY;
+		return x && y;
+	}
+}

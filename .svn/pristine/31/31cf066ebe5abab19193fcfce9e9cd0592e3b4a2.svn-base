@@ -1,0 +1,105 @@
+package ld27.player;
+
+import java.awt.event.KeyEvent;
+
+public class PlayerController {
+	boolean movingLeft, movingRight, jumpKey, jumpReleased;
+	boolean lastMovingLeft;
+	boolean attacking;
+	boolean castingAbility;
+	int attackRate, tick;
+	
+	public PlayerController(){
+		movingLeft = false;
+		movingRight = false;
+		jumpKey = false;
+		jumpReleased = true;
+		castingAbility = false;
+		attacking = false;
+		attackRate = 15;
+		tick = 0;
+	}
+	
+	public void processKeyPressed(KeyEvent e){
+		if (e.getKeyCode()==KeyEvent.VK_A) {
+			movingLeft = true;
+			lastMovingLeft = true;
+		}
+		if (e.getKeyCode()==KeyEvent.VK_D) {
+			movingRight = true;
+			lastMovingLeft = false;
+		}
+		if (((e.getKeyCode()==KeyEvent.VK_W) && jumpReleased) || (e.getKeyCode()==KeyEvent.VK_SPACE) && jumpReleased) {
+			jumpKey = true;
+			jumpReleased = false;
+		}
+	}
+	
+	public void processKeyReleased(KeyEvent e){
+		if (e.getKeyCode()==KeyEvent.VK_A)
+			movingLeft = false;
+		if (e.getKeyCode()==KeyEvent.VK_D)
+			movingRight = false;
+		if (e.getKeyCode()==KeyEvent.VK_W || e.getKeyCode()==KeyEvent.VK_SPACE){
+			jumpKey = false;
+			jumpReleased = true;
+		}
+	}
+
+	public boolean isLastMovingLeft() {
+		return lastMovingLeft;
+	}
+	
+	public boolean isMovingLeft() {
+		return movingLeft;
+	}
+
+	public void setMovingLeft(boolean movingLeft) {
+		this.movingLeft = movingLeft;
+	}
+
+	public boolean isMovingRight() {
+		return movingRight;
+	}
+
+	public void setMovingRight(boolean movingRight) {
+		this.movingRight = movingRight;
+	}
+
+	public boolean isJumpKey() {
+		return jumpKey;
+	}
+
+	public void setJumpKey(boolean jumpKey) {
+		this.jumpKey = jumpKey;
+	}
+
+	public boolean isAttacking() {
+		return attacking;
+	}
+
+	public void setAttacking(boolean attacking) {
+		this.attacking = attacking;
+	}
+	
+	public boolean canAttack(){
+		if(++tick>=attackRate){
+			tick = 0;
+			return true;
+		}
+		return false;
+	}
+	
+	public void resetAttackRate(){
+		tick = attackRate;
+	}
+
+	public boolean isCastingAbility() {
+		return castingAbility;
+	}
+
+	public void setCastingAbility(boolean castingAbility) {
+		this.castingAbility = castingAbility;
+	}
+	
+}

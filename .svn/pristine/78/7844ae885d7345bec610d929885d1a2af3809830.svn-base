@@ -1,0 +1,15 @@
+package ld27.util;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+
+public class FileIOHelper {
+	public static BufferedInputStream loadResource(String path){
+		try {
+			return new BufferedInputStream(FileIOHelper.class.getResource(path).openStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+}

@@ -1,0 +1,60 @@
+package ld27;
+
+import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+import javax.swing.JFrame;
+
+public class DesktopGame {
+	public static final GraphicsDevice DEVICE = GraphicsEnvironment
+			.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+	public static final int HEIGHT = AppletGame.HEIGHT;
+	public static final int WIDTH = AppletGame.WIDTH;
+	private GamePanel gp;
+	private JFrame frame;
+
+	public static void main(String[] args) {
+		new DesktopGame();
+	}
+	public DesktopGame() {
+		frame = new JFrame();
+		gp = new GamePanel();
+		frame.add(gp);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.pack();
+		frame.setVisible(true);
+		frame.setResizable(false);
+		frame.setLocationRelativeTo(null);
+		gp.addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent event) {
+				if (event.getKeyCode() == KeyEvent.VK_F) {
+					setFullscreen(DEVICE.getFullScreenWindow() == null);
+				}
+			}
+		});
+
+	}
+	public void setFullscreen(boolean fulls) {
+		if (fulls) {
+			gp.setPreferredSize(new Dimension(1, 1));
+			frame.setVisible(false);
+			frame.dispose();
+			frame.setUndecorated(true);
+			frame.setVisible(true);
+			DEVICE.setFullScreenWindow(frame);
+			gp.requestFocus();
+		} else {
+			gp.setPreferredSize(new Dimension(1, 1));
+			frame.setVisible(false);
+			frame.dispose();
+			frame.setUndecorated(false);
+			frame.setVisible(true);
+			DEVICE.setFullScreenWindow(null);
+			gp.requestFocus();
+		}
+	}
+
+}

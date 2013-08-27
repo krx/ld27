@@ -1,0 +1,37 @@
+package ld27.map;
+
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.Collections;
+
+import ld27.GamePanel;
+import ld27.player.Animatable;
+import ld27.player.Animation;
+
+public class CaptureZone extends Animatable {
+	private static final String root = "/graphics/Platform/";
+	private Rectangle bounds;
+	private final static ArrayList<Point> locations = new ArrayList<Point>();
+	
+	public CaptureZone(){
+		loadAnims();
+		locations.add(new Point(2464,256));
+		locations.add(new Point(2464,640));
+		locations.add(new Point(2464,1280));
+		locations.add(new Point(2464,1792));
+		Collections.shuffle(locations);
+		bounds = new Rectangle(locations.get(0).x,locations.get(0).y,196,64);
+	}
+	
+	public void loadAnims() {
+		activeAnim = new Animation(root+"Platform0.png",
+								   root+"Platform1.png",
+								   root+"Platform2.png");
+	}
+	
+	public void paint(Graphics g){
+		activeAnim.paint(g, bounds.x+GamePanel.cam.offx, bounds.y+GamePanel.cam.offy);
+	}
+}

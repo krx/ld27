@@ -1,0 +1,40 @@
+package ld27;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+
+import javax.swing.JFrame;
+
+public class DesktopGame extends JFrame {
+	GamePanel gp;
+	private Component mn;
+	public static void main(String[] args) {
+		new DesktopGame();
+	}
+	public DesktopGame() {
+		mn = new GameMenu(this);
+		add(mn);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		pack();
+		setVisible(true);
+		setResizable(false);
+		new java.util.Timer().schedule(new java.util.TimerTask() {
+			public void run() {
+				repaint();
+			}
+		}, 1, 10);
+	}
+	public void paint(Graphics g) {
+		BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+		Graphics bg = img.getGraphics();
+		bg.setColor(Color.WHITE);
+		bg.fillRect(0, 0, getWidth(), getHeight());
+		if (gp == null)
+			mn.paint(bg);
+		else
+			gp.paint(bg);
+		g.drawImage(img, 0, 0, null);
+	}
+}
